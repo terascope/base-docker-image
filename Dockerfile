@@ -45,13 +45,15 @@ RUN apk --no-cache add \
     && npm install \
     --quiet \
     --no-package-lock \
-    --cache /tmp/empty-cache \
     'terafoundation_kafka_connector@~0.5.3' \
     && apk del .build-deps
 
 WORKDIR /app/source
 
-COPY docker-pkg-fix.js  /usr/local/bin/docker-pkg-fix
+# verify node-rdkafka is installed right
+RUN node -e "require('node-rdkafka')"
+
+COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
 
 ENV NODE_OPTIONS "--max-old-space-size=2048"
