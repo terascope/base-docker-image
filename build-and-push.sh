@@ -59,8 +59,8 @@ main() {
         exit 1
     fi
 
-    local sub_version="-3"
-    local node_versions=("10.16.3" "12.14.1") 
+    local sub_version=""
+    local node_versions=("10.17.0" "12.14.1") 
     for node_version in "${node_versions[@]}"; do
         docker_build "$registry" "$node_version" "$sub_version"
     done
