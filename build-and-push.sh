@@ -60,7 +60,7 @@ main() {
         exit 1
     fi
 
-    local sub_version="-2"
+    local sub_version="-3"
     
     docker_build "$registry" "10.18.1" "$sub_version"
     docker_build "$registry" "12.14.1" "$sub_version"
