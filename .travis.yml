@@ -2,6 +2,7 @@ os: linux
 dist: bionic
 language: shell
 services: docker
+if: commit_message !~ /(no-deploy|wip)/
 before_script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - docker info | grep Username

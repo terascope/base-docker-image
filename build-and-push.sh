@@ -18,10 +18,10 @@ prompt() {
             break
             ;;
         [Nn]*)
-            echoerr "Skipping..."
+            echo "Skipping..."
             return 1
             ;;
-        *) echoerr "Please answer yes or no." ;;
+        *) echo "Please answer yes or no." ;;
         esac
     done
 }
@@ -44,7 +44,7 @@ docker_push() {
     local registry="$1"
     local version="$2"
     local sub_version="$3"
-    
+
     local image_tag="${registry}/node-base:$version$sub_version"
 
     printf '\n* PUSHING %s...\n\n' "$image_tag"
@@ -60,7 +60,7 @@ main() {
     fi
 
     local sub_version=""
-    local node_versions=("10.16.3" "12.14.1") 
+    local node_versions=("10.16.3" "12.14.1")
     for node_version in "${node_versions[@]}"; do
         docker_build "$registry" "$node_version" "$sub_version"
     done
