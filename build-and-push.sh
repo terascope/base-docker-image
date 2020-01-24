@@ -32,7 +32,7 @@ docker_build() {
     local sub_version="$3"
 
     local image_tag="${registry}/node-base:$version$sub_version"
-    printf '\n* BUILDING node:%s...\n\n' "$version"
+    printf '\n* BUILDING %s...\n\n' "$image_tag"
     docker build \
         --build-arg "NODE_VERSION=$version" \
         --no-cache \
@@ -46,9 +46,8 @@ docker_push() {
     local sub_version="$3"
     
     local image_tag="${registry}/node-base:$version$sub_version"
-    printf '\n'
-    prompt "Do you want to push $image_tag?" &&
-        printf '\n* PUSHING %s...\n\n' "$image_tag"
+    
+    printf '\n* PUSHING %s...\n\n' "$image_tag"
         docker push "$image_tag"
 }
 
@@ -61,12 +60,18 @@ main() {
     fi
 
     local sub_version="-3"
-    
-    docker_build "$registry" "10.18.1" "$sub_version"
-    docker_build "$registry" "12.14.1" "$sub_version"
-    
-    docker_push "$registry" "10.18.1" "$sub_version"
-    docker_push "$registry" "12.14.1" "$sub_version"
+    local node_versions=("10.18.1" "12.14.1") 
+    for node_version in "${node_versions[@]}"; do
+        docker_build "$registry" "$node_version" "$sub_version"
+    done
+
+    printf '\n* DONE BUILDING \n\n'
+
+    prompt "Do you want to push $image_tag?" || exit 0
+
+    for node_version in "${node_versions[@]}"; do
+        docker_push "$registry" "$node_version" "$sub_version"
+    done
 }
 
 main "$@"

@@ -6,15 +6,24 @@ ENV WITH_SASL 0
 
 RUN apk --no-cache add \
     bash \
+    curl \
     tini \
     g++ \
     ca-certificates \
     lz4-dev \
     musl-dev \
     openssl-dev \
+    cyrus-sasl-dev \
     make \
-    curl \
     python
+
+RUN apk add --no-cache \
+    --virtual .build-deps \
+    gcc \
+    zlib-dev \
+    libc-dev \
+    bsd-compat-headers \
+    py-setuptools
 
 RUN node --version
 RUN yarn --version
@@ -24,7 +33,6 @@ RUN mkdir -p /app/source
 
 # Install bunyan
 RUN yarn global add \
-    --silent \
     --ignore-optional \
     --no-progress \
     --no-emoji \
@@ -35,18 +43,16 @@ RUN yarn global add \
 # use npm because there isn't a package.json
 WORKDIR /app
 
-RUN apk --no-cache add \
-    --virtual .build-deps \
-    gcc \
-    zlib-dev \
-    bsd-compat-headers \
-    py-setuptools \
-    && npm init --yes > /dev/null \
-    && npm install \
-    --quiet \
-    --no-package-lock \
-    'terafoundation_kafka_connector@~0.5.3' \
-    && apk del .build-deps
+RUN yarn init --yes 2> /dev/null \
+    && yarn add \
+    --ignore-optional \
+    --no-progress \
+    --no-emoji \
+    --no-cache \
+    --no-lockfile \
+    'terafoundation_kafka_connector@~0.5.3'
+
+RUN apk del .build-deps
 
 WORKDIR /app/source
 
