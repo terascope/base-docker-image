@@ -52,7 +52,7 @@ RUN yarn init --yes 2> /dev/null \
     --no-lockfile \
     'terafoundation_kafka_connector@~0.5.3'
 
-RUN apk del .build-deps
+# RUN apk del .build-deps
 
 WORKDIR /app/source
 
