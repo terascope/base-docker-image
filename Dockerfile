@@ -40,6 +40,3 @@ COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
 
 ENV NODE_OPTIONS "--max-old-space-size=2048"
-
-# Use tini to handle sigterm and zombie processes
-ENTRYPOINT ["/sbin/tini", "--"]
