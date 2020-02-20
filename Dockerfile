@@ -1,29 +1,8 @@
 ARG NODE_VERSION
-FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_VERSION}-buster
 
 ENV NPM_CONFIG_LOGLEVEL error
 ENV WITH_SASL 0
-
-RUN apk --no-cache add \
-    bash \
-    curl \
-    tini \
-    g++ \
-    ca-certificates \
-    lz4-dev \
-    musl-dev \
-    openssl-dev \
-    cyrus-sasl-dev \
-    make \
-    python
-
-RUN apk add --no-cache \
-    --virtual .build-deps \
-    gcc \
-    zlib-dev \
-    libc-dev \
-    bsd-compat-headers \
-    py-setuptools
 
 RUN node --version
 RUN yarn --version
@@ -51,8 +30,6 @@ RUN yarn init --yes 2> /dev/null \
     --no-cache \
     --no-lockfile \
     'terafoundation_kafka_connector@~0.5.3'
-
-RUN apk del .build-deps
 
 WORKDIR /app/source
 
