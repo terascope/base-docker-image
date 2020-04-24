@@ -1,6 +1,14 @@
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine
 
+# use an older alpine registry for 10.19.0
+# because otherwise requiring node-rdkafka breaks
+# linux amd64 (like CI)
+RUN if [[ "${NODE_VERSION}" == "10.19.0" ]]; then \
+    sed -i -e 's/v3.11/v3.9/g' /etc/apk/repositories \
+    && apk upgrade; \
+    fi
+
 RUN apk --no-cache add \
     bash \
     curl \
