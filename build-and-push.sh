@@ -60,7 +60,7 @@ main() {
     fi
 
     local sub_version="-2"
-    local node_versions=("10.20.1" "12.16.2")
+    local node_versions=("10.19.0" "12.16.2")
     for node_version in "${node_versions[@]}"; do
         docker_build "$registry" "$node_version" "$sub_version"
     done

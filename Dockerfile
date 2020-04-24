@@ -1,23 +1,25 @@
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine
 
-RUN apk --update --no-cache add \
+RUN apk --no-cache add \
     bash \
     curl \
     tini \
     g++ \
+    apk-tools \
     ca-certificates \
+    libstdc++ \
     lz4-dev \
-    libssl1.1 \
     musl-dev \
+    ncurses-terminfo \
+    libssh2-dev \
     openssl-dev \
     cyrus-sasl-dev \
-    zstd \
     zstd-dev \
     make \
     python
 
-RUN apk --update --no-cache add \
+RUN apk --no-cache add \
     --virtual .build-deps \
     gcc \
     zlib-dev \
