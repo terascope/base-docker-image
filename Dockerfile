@@ -60,7 +60,7 @@ RUN apk del .build-deps
 WORKDIR /app/source
 
 # verify node-rdkafka is installed right
-RUN node --trace-exit --print --eval "console.dir(require('node-rdkafka'))"
+RUN node --print --eval "require('node-rdkafka')"
 
 COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
