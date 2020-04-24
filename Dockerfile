@@ -5,8 +5,8 @@ RUN apk --no-cache add \
     bash \
     curl \
     tini \
-    g++ \
     apk-tools \
+    build-base \
     ca-certificates \
     libstdc++ \
     lz4-dev \
@@ -16,7 +16,6 @@ RUN apk --no-cache add \
     openssl-dev \
     cyrus-sasl-dev \
     zstd-dev \
-    make \
     python
 
 RUN apk --no-cache add \
@@ -61,7 +60,7 @@ RUN apk del .build-deps
 WORKDIR /app/source
 
 # verify node-rdkafka is installed right
-RUN node -e "console.dir(require('node-rdkafka'))"
+RUN node --trace-exit --print --eval "console.dir(require('node-rdkafka'))"
 
 COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
