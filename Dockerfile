@@ -1,5 +1,26 @@
 ARG NODE_VERSION
-FROM node:${NODE_VERSION}-buster
+FROM node:${NODE_VERSION}-alpine
+
+RUN apk --no-cache add \
+    bash \
+    curl \
+    tini \
+    g++ \
+    ca-certificates \
+    lz4-dev \
+    musl-dev \
+    openssl-dev \
+    cyrus-sasl-dev \
+    make \
+    python
+
+RUN apk add --no-cache \
+    --virtual .build-deps \
+    gcc \
+    zlib-dev \
+    libc-dev \
+    bsd-compat-headers \
+    py-setuptools
 
 ENV NPM_CONFIG_LOGLEVEL error
 ENV WITH_SASL 0
@@ -31,10 +52,12 @@ RUN yarn init --yes 2> /dev/null \
     --no-lockfile \
     'terafoundation_kafka_connector@~0.5.3'
 
+RUN apk del .build-deps
+
 WORKDIR /app/source
 
 # verify node-rdkafka is installed right
-RUN node -e "require('node-rdkafka')"
+RUN node -e "console.dir(require('node-rdkafka'))"
 
 COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
