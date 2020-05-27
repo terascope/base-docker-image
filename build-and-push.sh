@@ -28,8 +28,10 @@ prompt() {
 
 docker_build() {
     local registry="$1"
-    local version="$(get_node_version "$2")"
-    local sub_version="$(get_subversion "$2")"
+    local version sub_version
+    
+    version="$(get_node_version "$2")"
+    sub_version="$(get_subversion "$2")"
 
     local image_tag="${registry}/node-base:$version$sub_version"
     printf '\n* BUILDING %s...\n\n' "$image_tag"
@@ -43,8 +45,10 @@ docker_build() {
 
 docker_push() {
     local registry="$1"
-    local version="$(get_node_version "$2")"
-    local sub_version="$(get_subversion "$2")"
+    local version sub_version
+
+    version="$(get_node_version "$2")"
+    sub_version="$(get_subversion "$2")"
 
     local image_tag="${registry}/node-base:$version$sub_version"
 
@@ -78,7 +82,7 @@ main() {
         exit 1
     fi
 
-    local versions=("10.19.0-2" "12.16.3")
+    local versions=("10.19.0-2" "12.17.0")
     for version in "${versions[@]}"; do
         docker_build "$registry" "$version"
     done
