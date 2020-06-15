@@ -1,10 +1,10 @@
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine
 
-# use an older alpine registry for 10.19.0
+# use an older alpine registry for >=10.19
 # because otherwise requiring node-rdkafka breaks
 # linux amd64 (like CI)
-RUN if [[ "${NODE_VERSION}" == "10.19.0" ]]; then \
+RUN if [ -z "${NODE_VERSION%%10*}" ]; then \
     sed -i -e 's/v3.11/v3.9/g' /etc/apk/repositories \
     && apk upgrade; \
     fi
@@ -60,7 +60,7 @@ RUN npm init --yes &> /dev/null \
     --build \
     --no-package-lock \
     --no-optional \
-    'terafoundation_kafka_connector@~0.6.0' \
+    'terafoundation_kafka_connector@~0.6.1' \
     && npm cache clean --force
 
 RUN apk del .build-deps

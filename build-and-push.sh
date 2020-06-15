@@ -29,7 +29,7 @@ prompt() {
 docker_build() {
     local registry="$1"
     local version sub_version
-    
+
     version="$(get_node_version "$2")"
     sub_version="$(get_subversion "$2")"
 
@@ -82,7 +82,7 @@ main() {
         exit 1
     fi
 
-    local versions=("10.19.0-3" "12.18.0")
+    local versions=("10.21.0" "12.18.0-1")
     for version in "${versions[@]}"; do
         docker_build "$registry" "$version"
     done
