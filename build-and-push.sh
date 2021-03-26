@@ -6,7 +6,7 @@ prompt() {
     local question="$1"
 
     if [ "$CI" == "true" ]; then
-        if  [ "$TRAVIS_BRANCH" != "master" ] || [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+        if  [ "$TRAVIS_BRANCH" != "master" ] || [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
             echo "Skipping until master..."
             return 1;
         fi
