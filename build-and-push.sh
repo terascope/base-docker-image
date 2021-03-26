@@ -5,7 +5,7 @@ set -e
 prompt() {
     local question="$1"
 
-    if [ "$CI" == "true" ]; then
+    if [ "$CI" == "true" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
         echo "* auto-answer yes to $question since this is running in CI"
         return 0
     fi
