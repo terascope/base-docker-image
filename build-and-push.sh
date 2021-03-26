@@ -5,7 +5,11 @@ set -e
 prompt() {
     local question="$1"
 
-    if [ "$CI" == "true" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+    if [ "$CI" == "true" ]; then
+        if  [ "$TRAVIS_BRANCH" != "master" ]; then
+            echo "Skipping until master..."
+            return 1;
+        fi
         echo "* auto-answer yes to $question since this is running in CI"
         return 0
     fi
