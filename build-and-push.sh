@@ -28,29 +28,35 @@ prompt() {
 
 docker_build() {
     local registry="$1"
+    local image_type="$3"
     local version sub_version
 
     version="$(get_node_version "$2")"
     sub_version="$(get_subversion "$2")"
 
-    local image_tag="${registry}/node-base:$version$sub_version"
+    local image_tag="${registry}/node-base:$version$sub_version$image_type"
     printf '\n* BUILDING %s...\n\n' "$image_tag"
+    local file="Dockerfile"
+    if [ "$image_type" == "-core" ]; then
+        file="Dockerfile.core"
+    fi
 
     docker build \
+        --file "$file" \
         --build-arg "NODE_VERSION=$version" \
-        --no-cache \
         --pull \
         --tag "$image_tag" .
 }
 
 docker_push() {
     local registry="$1"
+    local image_type="$3"
     local version sub_version
 
     version="$(get_node_version "$2")"
     sub_version="$(get_subversion "$2")"
 
-    local image_tag="${registry}/node-base:$version$sub_version"
+    local image_tag="${registry}/node-base:$image_type$version$sub_version"
 
     printf '\n* PUSHING %s...\n\n' "$image_tag"
         docker push "$image_tag"
@@ -85,6 +91,7 @@ main() {
     local versions=("10.24.0" "12.21.0" "14.16.0")
     for version in "${versions[@]}"; do
         docker_build "$registry" "$version"
+        docker_build "$registry" "$version" "-core"
     done
 
     printf '\n* DONE BUILDING \n\n'
@@ -93,6 +100,7 @@ main() {
 
     for version in "${versions[@]}"; do
         docker_push "$registry" "$version"
+        docker_push "$registry" "$version" "-core"
     done
 }
 

@@ -1,0 +1,49 @@
+ARG NODE_VERSION
+FROM node:${NODE_VERSION}-alpine
+
+# use an older alpine registry for >=10.19
+# because otherwise requiring node-rdkafka breaks
+# linux amd64 (like CI)
+RUN if [ -z "${NODE_VERSION%%10*}" ]; then \
+    sed -i -e 's/v3.11/v3.9/g' /etc/apk/repositories \
+    && apk upgrade; \
+    fi
+
+RUN apk --no-cache add \
+    bash \
+    curl \
+    tini \
+    apk-tools \
+    build-base \
+    ca-certificates \
+    ncurses-terminfo \
+    libssh2-dev \
+    openssl-dev \
+    cyrus-sasl-dev \
+    python
+
+ENV NPM_CONFIG_LOGLEVEL error
+ENV WITH_SASL 0
+
+RUN node --version
+RUN yarn --version
+RUN npm --version
+
+# Install bunyan
+RUN yarn global add \
+    --ignore-optional \
+    --no-progress \
+    --no-emoji \
+    --no-cache \
+    bunyan
+
+RUN mkdir -p /app/source
+WORKDIR /app/source
+
+COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+
+ENV NODE_OPTIONS "--max-old-space-size=2048"
+
+# Use tini to handle sigterm and zombie processes
+ENTRYPOINT ["/sbin/tini", "--"]
