@@ -6,7 +6,7 @@ prompt() {
     local question="$1"
 
     if [ "$CI" == "true" ]; then
-        if  [ "$TRAVIS_BRANCH" != "master" ]; then
+        if  [ "$TRAVIS_BRANCH" != "master" ] || [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
             echo "Skipping until master..."
             return 1;
         fi
@@ -60,7 +60,7 @@ docker_push() {
     version="$(get_node_version "$2")"
     sub_version="$(get_subversion "$2")"
 
-    local image_tag="${registry}/node-base:$image_type$version$sub_version"
+    local image_tag="${registry}/node-base:$version$sub_version$image_type"
 
     printf '\n* PUSHING %s...\n\n' "$image_tag"
         docker push "$image_tag"
