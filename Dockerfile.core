@@ -20,7 +20,7 @@ RUN apk --no-cache add \
     libssh2-dev \
     openssl-dev \
     cyrus-sasl-dev \
-    python
+    python3
 
 ENV NPM_CONFIG_LOGLEVEL error
 ENV WITH_SASL 0
