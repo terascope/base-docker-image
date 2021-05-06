@@ -24,7 +24,7 @@ RUN apk --no-cache add \
     openssl-dev \
     cyrus-sasl-dev \
     zstd-dev \
-    python
+    python3
 
 RUN apk --no-cache add \
     --virtual .build-deps \
