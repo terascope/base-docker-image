@@ -92,7 +92,7 @@ main() {
         exit 1
     fi
 
-    local versions=("10.24.1" "12.22.1" "14.17.0")
+    local versions=("12.22.4" "14.17.4")
     for version in "${versions[@]}"; do
         docker_build "$registry" "$version"
         docker_build "$registry" "$version" "-core"
