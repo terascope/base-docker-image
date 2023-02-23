@@ -94,7 +94,7 @@ main() {
 
     local versions=("14.21.3" "16.19.1" "18.14.2")
     for version in "${versions[@]}"; do
-        # docker_build "$registry" "$version"
+        docker_build "$registry" "$version"
         docker_build "$registry" "$version" "-core"
     done
 
@@ -103,7 +103,7 @@ main() {
     prompt "Do you want to push $image_tag?" || exit 0
 
     for version in "${versions[@]}"; do
-        # docker_push "$registry" "$version"
+        docker_push "$registry" "$version"
         docker_push "$registry" "$version" "-core"
     done
 }
