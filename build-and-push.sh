@@ -103,7 +103,7 @@ main() {
     prompt "Do you want to push $image_tag?" || exit 0
 
     for version in "${versions[@]}"; do
-        # docker_push "$registry" "$version"
+        docker_push "$registry" "$version"
         docker_push "$registry" "$version" "-core"
     done
 }
