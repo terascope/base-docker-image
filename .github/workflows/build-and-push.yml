@@ -1,0 +1,15 @@
+name: Terascope Base Image Build
+run-name: ${{ github.actor }} is running Building the Terascope Base Image
+on: [ push ]
+  # push:
+  #   branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker info
+      # - run: ./build-and-push.sh terascope
