@@ -1,37 +1,44 @@
 # Terascope Base Docker images
 
-[![Build Status](https://app.travis-ci.com/terascope/base-docker-image.svg?branch=master)](https://app.travis-ci.com/terascope/base-docker-image)
-
 This project builds the Terascope base images [used by Teraslice](https://github.com/terascope/teraslice/blob/master/Dockerfile#L1).  Below are the latest docker image tags.
 
 With the terafoundation connectors builtin:
 
-- `terascope/node-base:14.19.3` - 593MB
-- `terascope/node-base:16.15.0` - 586MB
-- `terascope/node-base:18.2.0`  - 700MB
+- `terascope/node-base:14.21.3`
+- `terascope/node-base:16.20.0`
+- `terascope/node-base:18.16.0`
 
 Without: (this will save the image size by roughly 200MB)
 
-- `terascope/node-base:14.19.3-core` - 367MB
-- `terascope/node-base:16.15.0-core` - 360MB
-- `terascope/node-base:18.2.0-core`  - 420MB
+- `terascope/node-base:14.21.3-core`
+- `terascope/node-base:16.20.0-core`
+- `terascope/node-base:18.16.0-core`
 
-## Usage
+Check for the latest version tags here:
 
-You can test run this locally to get the final image sizes so this `README.md`
-can be updated.
+https://hub.docker.com/r/terascope/node-base/tags
+
+At the moment, manual builds can be done like this (substitute the appropriate
+NodeJS version):
 
 ```bash
-./build-and-push.sh terascope
+# With connectors
+docker build --file Dockerfile --pull \
+--build-arg NODE_VERSION=18.16.0 \
+--tag terascope/node-base:18.16.0 .
 
-* BUILDING terascope/node-base:14.19.3...
-
-...
-
-* DONE BUILDING
-
-Do you want to push ? n
-Skipping...
+# Without connectors
+docker build --file Dockerfile.core --pull \
+--build-arg NODE_VERSION=18.16.0 \
+--tag terascope/node-base:18.16.0-core .
 ```
 
-The publishing is done by TravisCI.
+Double check the action output before relying on the above commands.
+
+## Release Workflow
+
+- Docker image builds will happen on any push to any branch other than `master`.
+- When a Github release is made, the image will be built and then pushed to
+docker hub.
+
+The build and publishing is done by Github Actions.
