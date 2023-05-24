@@ -5,6 +5,7 @@ set -e
 prompt() {
     local question="$1"
 
+    # TODO: Change the tests here to work for Github Actions.
     if [ "$CI" == "true" ]; then
         if  [ "$TRAVIS_BRANCH" != "master" ] || [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
             echo "Skipping until master..."
@@ -92,7 +93,7 @@ main() {
         exit 1
     fi
 
-    local versions=("14.21.3" "16.19.1" "18.14.2")
+    local versions=("14.21.3" "16.20.0" "18.16.0" "20.2.0")
     for version in "${versions[@]}"; do
         docker_build "$registry" "$version"
         docker_build "$registry" "$version" "-core"
