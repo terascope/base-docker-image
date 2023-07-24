@@ -2,8 +2,11 @@ name: release
 run-name: ${{ github.actor }} has triggered a build and push of the Terascope Base Image
 
 on:
-    release:
-      types: [published]
+  release:
+    types: [published]
+  schedule:
+    - cron: '30 5 * * 0'  # Sunday's at 0530
+  workflow_dispatch:
 
 jobs:
   build_and_release_matrix:
