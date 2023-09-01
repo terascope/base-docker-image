@@ -13,6 +13,7 @@ jobs:
       matrix:
         # NOTE: These versions must be kept in sync with the release.yml
         version: ["14.21.3", "16.20.0", "18.16.0"]
+        platform: ["linux/amd64","linux/arm64"]
     runs-on: ubuntu-latest
     steps:
       -
@@ -32,6 +33,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          platforms: ${{ matrix.platform }}
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           file: ./Dockerfile
@@ -41,6 +43,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          platforms: ${{ matrix.platform }}
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           file: ./Dockerfile.core
