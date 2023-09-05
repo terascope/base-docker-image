@@ -29,12 +29,14 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          platforms: linux/arm64,linux/amd64
       -
         name: Build
         uses: docker/build-push-action@v4
         with:
           context: .
-          # platforms: ${{ matrix.platform }}
+          platforms: linux/arm64,linux/amd64
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           push: true
@@ -45,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          # platforms: ${{ matrix.platform }}
+          platforms: linux/arm64,linux/amd64
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           push: true
