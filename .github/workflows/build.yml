@@ -37,6 +37,7 @@ jobs:
           platforms: linux/arm64,linux/amd64
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
+          push: true
           file: ./Dockerfile
           tags: terascope/node-base:${{ matrix.version }}-test
       -
@@ -47,5 +48,6 @@ jobs:
           platforms: linux/arm64,linux/amd64
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
+          push: true
           file: ./Dockerfile.core
           tags: terascope/node-base:${{ matrix.version }}-core-test
