@@ -38,7 +38,7 @@ jobs:
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           file: ./Dockerfile
-          tags: terascope/node-base:${{ matrix.version }}
+          tags: terascope/node-base:${{ matrix.version }}-test
       -
         name: Build Core
         uses: docker/build-push-action@v4
@@ -48,4 +48,4 @@ jobs:
           build-args: "NODE_VERSION=${{ matrix.version }}"
           pull: true
           file: ./Dockerfile.core
-          tags: terascope/node-base:${{ matrix.version }}-core
+          tags: terascope/node-base:${{ matrix.version }}-core-test
