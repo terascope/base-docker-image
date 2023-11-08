@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # NOTE: These versions must be kept in sync with the release.yml
-        version: ["14.21.3", "16.20.0", "18.16.0"]
+        version: ["16.20.2", "18.18.2", "20.8.1"]
     runs-on: ubuntu-latest
     steps:
       -
@@ -27,7 +27,7 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        with: 
+        with:
           platforms: linux/arm64,linux/amd64
       -
         name: Build
