@@ -4,15 +4,15 @@ This project builds the Terascope base images [used by Teraslice](https://github
 
 With the terafoundation connectors builtin:
 
-- `terascope/node-base:14.21.3`
-- `terascope/node-base:16.20.0`
-- `terascope/node-base:18.16.0`
+- `terascope/node-base:20.11.1`
+- `terascope/node-base:18.19.1`
+- `terascope/node-base:16.20.2`
 
 Without: (this will save the image size by roughly 200MB)
 
-- `terascope/node-base:14.21.3-core`
-- `terascope/node-base:16.20.0-core`
-- `terascope/node-base:18.16.0-core`
+- `terascope/node-base:20.11.1-core`
+- `terascope/node-base:18.19.1-core`
+- `terascope/node-base:16.20.2-core`
 
 Check for the latest version tags here:
 
@@ -24,13 +24,13 @@ NodeJS version):
 ```bash
 # With connectors
 docker build --file Dockerfile --pull \
---build-arg NODE_VERSION=18.16.0 \
---tag terascope/node-base:18.16.0 .
+--build-arg NODE_VERSION=18.19.1 \
+--tag terascope/node-base:18.19.1 .
 
 # Without connectors
 docker build --file Dockerfile.core --pull \
---build-arg NODE_VERSION=18.16.0 \
---tag terascope/node-base:18.16.0-core .
+--build-arg NODE_VERSION=18.19.1 \
+--tag terascope/node-base:18.19.1-core .
 ```
 
 Double check the action output before relying on the above commands.
