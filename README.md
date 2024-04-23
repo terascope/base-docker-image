@@ -6,13 +6,11 @@ With the terafoundation connectors builtin:
 
 - `terascope/node-base:20.11.1`
 - `terascope/node-base:18.19.1`
-- `terascope/node-base:16.20.2`
 
 Without: (this will save the image size by roughly 200MB)
 
 - `terascope/node-base:20.11.1-core`
 - `terascope/node-base:18.19.1-core`
-- `terascope/node-base:16.20.2-core`
 
 Check for the latest version tags here:
 
