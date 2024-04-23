@@ -52,7 +52,7 @@ RUN npm init --yes &> /dev/null \
     --build \
     --no-package-lock \
     --no-optional \
-    'terafoundation_kafka_connector@~0.11.1' \
+    'terafoundation_kafka_connector@~0.12.0' \
     && npm cache clean --force
 
 RUN apk del .build-deps
