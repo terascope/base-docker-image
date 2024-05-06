@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # NOTE: These versions must be kept in sync with the release.yml
-        version: ["18.19.1", "20.11.1"]
+        version: ["18.19.1", "20.11.1", "22.1.0"]
     runs-on: ubuntu-latest
     steps:
       -
