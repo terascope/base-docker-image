@@ -4,13 +4,13 @@ This project builds the Terascope base images [used by Teraslice](https://github
 
 With the terafoundation connectors builtin:
 
-- `terascope/node-base:22.1.0`
+- `terascope/node-base:22.2.0`
 - `terascope/node-base:20.11.1`
 - `terascope/node-base:18.19.1`
 
 Without: (this will save the image size by roughly 200MB)
 
-- `terascope/node-base:22.1.0-core`
+- `terascope/node-base:22.2.0-core`
 - `terascope/node-base:20.11.1-core`
 - `terascope/node-base:18.19.1-core`
 
