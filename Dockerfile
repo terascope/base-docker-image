@@ -26,9 +26,6 @@ RUN apk --no-cache add \
     bsd-compat-headers \
     py-setuptools
 
-# Check to see if distutils is installed because python 3.12 removed it
-RUN python3 -c "import distutils" || (apk update && apk add py3-setuptools)
-
 ENV NPM_CONFIG_LOGLEVEL error
 ENV WITH_SASL 0
 
