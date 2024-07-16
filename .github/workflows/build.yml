@@ -67,10 +67,10 @@ jobs:
       - 
         name: Retag, and push image
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
-          docker push ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
-          docker tag ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
-          docker push ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
       -
         name: Build Core
         uses: docker/build-push-action@v6
