@@ -8,17 +8,16 @@ on:
     - cron: '30 5 * * 0'  # Sunday's at 0530
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: ${{ github.repository_owner }}/node-base
+
 jobs:
   build_and_release_matrix:
     strategy:
       matrix:
         # NOTE: These versions must be kept in sync with the build.yml
-        version: ["18", "18.19", "18.19.1", 
-                  "20", "20.11", "20.11.1", 
-                  "22", "22.2", "22.2.0"]
-
+        version: ["18", "20", "22"]
     runs-on: ubuntu-latest
-
     steps:
       -
         name: Checkout
@@ -46,16 +45,37 @@ jobs:
           file: ./Dockerfile
           tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}"
       -
-        name: Build Core
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm64,linux/amd64
-          build-args: "NODE_VERSION=${{ matrix.version }}"
-          pull: true
-          push: true
-          file: ./Dockerfile.core
-          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-core"
+        name: Grab Current Version
+        id: current_version
+        run: echo "CURRENT_NODE_VERSION=$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }} node -v)" >> $GITHUB_ENV
+      -
+        name: Grab Minor Version
+        id: minor_version
+        run: echo "MINOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} minor)" >> $GITHUB_ENV
+      -
+        name: Grab Patch Version
+        id: patch_version
+        run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
+      - 
+        name: Retag, and push minor/patch images
+        run: |
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }}
+    
+# I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
+      # -
+      #   name: Build Core
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     platforms: linux/arm64,linux/amd64
+      #     build-args: "NODE_VERSION=${{ matrix.version }}"
+      #     pull: true
+      #     push: true
+      #     file: ./Dockerfile.core
+      #     tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-core"
 
       # Look into this more:
       # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images

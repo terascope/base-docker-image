@@ -57,7 +57,7 @@ jobs:
         id: patch_version
         run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
       - 
-        name: Retag, and push image
+        name: Retag, and push minor/patch images
         run: |
           docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}-test
