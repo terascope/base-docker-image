@@ -47,29 +47,15 @@ jobs:
       -
         name: Grab Current Version
         id: current_version
-        # run: echo "::set-output name=current_node_version::$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)"
         run: echo "CURRENT_NODE_VERSION=$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)" >> $GITHUB_ENV
       -
         name: Grab Minor Version
         id: minor_version
         run: echo "MINOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} minor)" >> $GITHUB_ENV
-        # run: |
-        #   echo "::set-output name=minor::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} minor)"
-
       -
         name: Grab Patch Version
         id: patch_version
         run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
-        # run: |
-        #   echo "::set-output name=patch::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} patch)"
-
-      # - 
-      #   name: Retag, and push image
-      #   run: |
-      #     docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
-      #     docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
-      #     docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
-      #     docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
       - 
         name: Retag, and push image
         run: |
