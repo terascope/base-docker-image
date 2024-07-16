@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # NOTE: These versions must be kept in sync with the release.yml
-        version: ["22"]
+        version: ["18", "20", "22"]
     runs-on: ubuntu-latest
 
     steps:
@@ -43,45 +43,53 @@ jobs:
           pull: true
           push: true
           file: ./Dockerfile
-          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test"
-          cache-to: 
+          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
       -
         name: Grab Current Version
         id: current_version
-        run: echo "::set-output name=current_node_version::$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)"
-        # run: echo "CURRENT_NODE_VERSION=$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)" >> $GITHUB_ENV
+        # run: echo "::set-output name=current_node_version::$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)"
+        run: echo "CURRENT_NODE_VERSION=$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test node -v)" >> $GITHUB_ENV
       -
         name: Grab Minor Version
         id: minor_version
-        # run: echo "MINOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} minor)" >> $GITHUB_ENV
-        run: |
-          echo "::set-output name=minor::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} minor)"
+        run: echo "MINOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} minor)" >> $GITHUB_ENV
+        # run: |
+        #   echo "::set-output name=minor::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} minor)"
 
       -
         name: Grab Patch Version
         id: patch_version
-        # run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
-        run: |
-          echo "::set-output name=patch::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} patch)"
+        run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
+        # run: |
+        #   echo "::set-output name=patch::$(node extract-semver.js ${{ steps.current_version.outputs.current_node_version }} patch)"
 
+      # - 
+      #   name: Retag, and push image
+      #   run: |
+      #     docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+      #     docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
+      #     docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+      #     docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
       - 
         name: Retag, and push image
         run: |
-          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
-          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-test
-          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
-          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-test
-      -
-        name: Build Core
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm64,linux/amd64
-          build-args: "NODE_VERSION=${{ matrix.version }}"
-          pull: true
-          push: true
-          file: ./Dockerfile.core
-          tags: | 
-            "${{ env.IMAGE_NAME }}:${{ matrix.version }}-core-test"
-            "${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-core-test"
-            "${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-core-test"
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}-test
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }}-test ${{ env.IMAGE_NAME }}:${{ matrix.version }}-test
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }}-test
+
+# I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
+      # -
+      #   name: Build Core
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     platforms: linux/arm64,linux/amd64
+      #     build-args: "NODE_VERSION=${{ matrix.version }}"
+      #     pull: true
+      #     push: true
+      #     file: ./Dockerfile.core
+      #     tags: | 
+      #       "${{ env.IMAGE_NAME }}:${{ matrix.version }}-core-test"
+      #       "${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}-core-test"
+      #       "${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ steps.minor_version.outputs.minor }}.${{ steps.patch_version.outputs.patch }}-core-test"
