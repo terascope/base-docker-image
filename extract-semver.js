@@ -23,9 +23,9 @@ if (rawSemver === undefined || rawSemver === null) {
 if (
     type === undefined || 
     type === null ||
-    (type !== 'minor' &&  type !== 'patch')
+    (type !== 'minor' &&  type !== 'patch' && type !== 'major')
 ) {
-    throw new Error('You must define a type of either "minor" or "patch" as the second argument.');
+    throw new Error('You must define a type of either "major" "minor" or "patch" as the second argument.');
 }
 
 function getSemverPart(semver, part) {
@@ -39,12 +39,14 @@ function getSemverPart(semver, part) {
         throw new Error('Invalid semver format');
     }
     switch (part) {
+        case 'major':
+          return parseInt(match[1], 10);
         case 'minor':
           return parseInt(match[2], 10);
         case 'patch':
           return parseInt(match[3], 10);
         default:
-          throw new Error('Invalid part specified. Use "minor" or "patch".');
+          throw new Error('Invalid part specified. Use "major", "minor" or "patch".');
     }
 }
 
