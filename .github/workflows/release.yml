@@ -70,12 +70,12 @@ jobs:
           fi
       -
         name: Grab Major Version
-        if: ${{ env.SPECIFIC_VERSION}} == 'true'        
+        if: ${{ env.SPECIFIC_VERSION == 'true' }}       
         id: major_version
         run: echo "MAJOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} major)" >> $GITHUB_ENV
       - 
         name: Retag, and push minor/patch images
-        if: ${{ env.SPECIFIC_VERSION}} == 'false'
+        if: ${{ env.SPECIFIC_VERSION == 'false' }}
         run: |
           docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}
@@ -83,7 +83,7 @@ jobs:
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }}
       - 
         name: Retag, and push major/minor images
-        if: ${{ env.SPECIFIC_VERSION}} == 'true'
+        if: ${{ env.SPECIFIC_VERSION == 'true' }}
         run: |
           docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ env.MAJOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}
