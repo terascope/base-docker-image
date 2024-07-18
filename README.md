@@ -1,14 +1,19 @@
 # Terascope Base Docker images
 
-This project builds the Terascope base images [used by Teraslice](https://github.com/terascope/teraslice/blob/master/Dockerfile#L1).  Below are the latest docker image tags.
+This project builds the Terascope base images [used by Teraslice](https://github.com/terascope/teraslice/blob/master/Dockerfile#L1).  Below are the latest docker image tags. Tags with only a major version use the latest minor and patch version. Tags with major/minor use the latest patch version. 
 
 With the terafoundation connectors builtin:
 
-- `terascope/node-base:22.2.0`
-- `terascope/node-base:20.11.1`
-- `terascope/node-base:18.19.1`
+- `terascope/node-base:22`
+- `terascope/node-base:20`
+- `terascope/node-base:18`
+- `terascope/node-base:22.*.*`
+- `terascope/node-base:20.*.*`
+- `terascope/node-base:18.*.*`
 
 Without: (this will save the image size by roughly 200MB)
+
+**_DEPRECATED:_** Core images are no longer built and pushed to docker.hub.  
 
 - `terascope/node-base:22.2.0-core`
 - `terascope/node-base:20.11.1-core`

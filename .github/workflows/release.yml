@@ -8,31 +8,37 @@ on:
     - cron: '30 5 * * 0'  # Sunday's at 0530
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: ${{ github.repository_owner }}/node-base
+
 jobs:
   build_and_release_matrix:
     strategy:
       matrix:
         # NOTE: These versions must be kept in sync with the build.yml
-        version: ["18.19.1", "20.11.1", "22.2.0"]
+        # In the case where a new node version introduces a breaking change,
+        # replace the major version of the matrix to a pinned version here.
+        # Ex: ["18", "20", "22"] ---> ["18.19.1", "20", "22"]
+        version: ["18", "20", "22.4.1"]
     runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
+        name: Log in to the Container registry
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/arm64,linux/amd64
       -
         name: Build
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/arm64,linux/amd64
@@ -40,15 +46,68 @@ jobs:
           pull: true
           push: true
           file: ./Dockerfile
-          tags: terascope/node-base:${{ matrix.version }}
+          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}"
       -
-        name: Build Core
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/arm64,linux/amd64
-          build-args: "NODE_VERSION=${{ matrix.version }}"
-          pull: true
-          push: true
-          file: ./Dockerfile.core
-          tags: terascope/node-base:${{ matrix.version }}-core
+        name: Grab Current Version
+        id: current_version
+        run: echo "CURRENT_NODE_VERSION=$(docker run ${{ env.IMAGE_NAME }}:${{ matrix.version }} node -v)" >> $GITHUB_ENV
+      -
+        name: Grab Minor Version
+        id: minor_version
+        run: echo "MINOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} minor)" >> $GITHUB_ENV
+      -
+        name: Grab Patch Version
+        id: patch_version
+        run: echo "PATCH=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} patch)" >> $GITHUB_ENV
+      - 
+        name: Check for specific node version
+        id: check_specific_version
+        run: |
+          if [[ "${{ matrix.version }}" == *.* ]]; then
+            echo "SPECIFIC_VERSION=true" >> $GITHUB_ENV
+          else
+            echo "SPECIFIC_VERSION=false" >> $GITHUB_ENV
+          fi
+      -
+        name: Grab Major Version
+        if: ${{ env.SPECIFIC_VERSION == 'true' }}       
+        id: major_version
+        run: echo "MAJOR=$(node extract-semver.js ${{ env.CURRENT_NODE_VERSION }} major)" >> $GITHUB_ENV
+      - 
+        name: Retag, and push minor/patch images
+        if: ${{ env.SPECIFIC_VERSION == 'false' }}
+        run: |
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ matrix.version }}.${{ env.MINOR }}.${{ env.PATCH }}
+      - 
+        name: Retag, and push major/minor images
+        if: ${{ env.SPECIFIC_VERSION == 'true' }}
+        run: |
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ env.MAJOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}
+          docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }}
+    
+# I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
+      # -
+      #   name: Build Core
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     platforms: linux/arm64,linux/amd64
+      #     build-args: "NODE_VERSION=${{ matrix.version }}"
+      #     pull: true
+      #     push: true
+      #     file: ./Dockerfile.core
+      #     tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-core"
+
+      # Look into this more:
+      # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
+      # - name: Generate artifact attestation
+      #   uses: actions/attest-build-provenance@v1
+      #   with:
+      #     subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+      #     subject-digest: ${{ steps.build_and_release_matrix.outputs.digest }}
+      #     push-to-registry: true
