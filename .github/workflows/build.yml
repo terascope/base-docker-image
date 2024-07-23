@@ -8,7 +8,9 @@ on:
       - '!master'
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  # IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/node-base
       
 jobs:
   build_matrix:
@@ -39,7 +41,7 @@ jobs:
         name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
@@ -57,7 +59,7 @@ jobs:
           pull: true
           push: true
           file: ./Dockerfile
-          tags: "ghcr.io/${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
+          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
       -
         name: Grab Current Version
         id: current_version
