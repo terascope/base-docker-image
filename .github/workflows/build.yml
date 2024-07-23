@@ -56,6 +56,7 @@ jobs:
           context: .
           platforms: linux/arm64,linux/amd64
           build-args: "NODE_VERSION=${{ matrix.version }}"
+          visibility: public
           pull: true
           push: true
           file: ./Dockerfile
