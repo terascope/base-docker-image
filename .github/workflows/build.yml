@@ -57,7 +57,7 @@ jobs:
           pull: true
           push: true
           file: ./Dockerfile
-          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
+          tags: "ghcr.io/${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
       -
         name: Grab Current Version
         id: current_version
