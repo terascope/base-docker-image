@@ -44,12 +44,19 @@ jobs:
         with:
           platforms: linux/arm64,linux/amd64
       -
+        name: Get timestamp for docker build
+        id: docker_time_stamp
+        run: echo "BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" >> $GITHUB_ENV
+      -
         name: Build
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/arm64,linux/amd64
-          build-args: "NODE_VERSION=${{ matrix.version }}"
+          build-args: |
+            "NODE_VERSION=${{ matrix.version }}"
+            "GITHUB_SHA=${{ github.sha }}"
+            "BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}"
           provenance: false
           sbom: false
           pull: true
