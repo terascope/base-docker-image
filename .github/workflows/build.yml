@@ -48,6 +48,9 @@ jobs:
         with:
           platforms: linux/arm64,linux/amd64
       -
+        name: check name
+        run: echo ${{ github.repository }}
+      -
         name: Build
         uses: docker/build-push-action@v6
         with:
@@ -79,7 +82,6 @@ jobs:
           else
             echo "SPECIFIC_VERSION=false" >> $GITHUB_ENV
           fi
-          echo ${{ github.repository }}
       -
         name: Grab Major Version
         if: ${{ env.SPECIFIC_VERSION == 'true' }}
