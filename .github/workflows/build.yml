@@ -8,7 +8,7 @@ on:
       - '!master'
 
 env:
-  IMAGE_NAME: ${{ github.repository_owner }}/node-base
+  IMAGE_NAME: ${{ github.repository }}
       
 jobs:
   build_matrix:
@@ -47,9 +47,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/arm64,linux/amd64
-      -
-        name: check name
-        run: echo ${{ github.repository }}
       -
         name: Build
         uses: docker/build-push-action@v6
