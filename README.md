@@ -26,6 +26,24 @@ Check for the latest version tags here:
 
 https://github.com/terascope/base-docker-image/pkgs/container/node-base
 
+## Pulling node-base image from ghcr.io
+
+Pulling an image can be used with the `docker pull` command:
+```
+docker pull ghcr.io/terascope/node-base:20
+```
+
+A known issue with pulling an image from ghcr is when a token expires, it will pop up with a `denied` error when pulling.
+
+```
+Error response from daemon: Head "https://ghcr.io/v2/terascope/node-base/manifests/20": denied: denied
+```
+
+To resolve this you can logout of the `ghcr.oi` registry. Signing back in isn't nessesary:
+```
+docker logout ghcr.io
+```
+
 At the moment, manual builds can be done like this (substitute the appropriate
 NodeJS version):
 
