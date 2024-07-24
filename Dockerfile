@@ -77,8 +77,8 @@ LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.source="https://github.com/terascope/base-docker-image" \
   org.opencontainers.image.title="Node-base" \
   org.opencontainers.image.vendor="Terascope" \
-  org.opencontainers.image.node_version="$NODE_VERSION" \
-  org.opencontainers.image.kafka_connector_version="1.0.0"
+  node_version="$NODE_VERSION" \
+  kafka_connector_version="1.0.0"
 
 # Use tini to handle sigterm and zombie processes
 ENTRYPOINT ["/sbin/tini", "--"]
