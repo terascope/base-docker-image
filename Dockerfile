@@ -1,6 +1,9 @@
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine
 
+ARG GITHUB_SHA
+ARG BUILD_TIMESTAMP
+
 RUN apk --no-cache add \
     bash \
     curl \
@@ -67,8 +70,15 @@ COPY wait-for-it.sh /usr/local/bin/wait-for-it
 
 ENV NODE_OPTIONS "--max-old-space-size=2048"
 
-LABEL node_version="$NODE_VERSION"
-LABEL kafka_connector_version="1.0.0"
+LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
+  org.opencontainers.image.documentation="https://github.com/terascope/base-docker-image/blob/master/README.md" \
+  org.opencontainers.image.licenses="MIT License" \
+  org.opencontainers.image.revision="$GITHUB_SHA" \
+  org.opencontainers.image.source="https://github.com/terascope/base-docker-image" \
+  org.opencontainers.image.title="Node-base" \
+  org.opencontainers.image.vendor="Terascope" \
+  io.terascope.image.node_version="$NODE_VERSION" \
+  io.terascope.image.kafka_connector_version="1.0.0"
 
 # Use tini to handle sigterm and zombie processes
 ENTRYPOINT ["/sbin/tini", "--"]
