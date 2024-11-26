@@ -55,7 +55,7 @@ RUN npm init --yes &> /dev/null \
     --build \
     --no-package-lock \
     --no-optional \
-    'terafoundation_kafka_connector@~1.0.0' \
+    'terafoundation_kafka_connector@~1.2.0' \
     && npm cache clean --force
 
 RUN apk del .build-deps
@@ -78,7 +78,7 @@ LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.title="Node-base" \
   org.opencontainers.image.vendor="Terascope" \
   io.terascope.image.node_version="$NODE_VERSION" \
-  io.terascope.image.kafka_connector_version="1.0.0"
+  io.terascope.image.kafka_connector_version="1.2.0"
 
 # Use tini to handle sigterm and zombie processes
 ENTRYPOINT ["/sbin/tini", "--"]
