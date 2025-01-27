@@ -20,7 +20,7 @@ jobs:
         # replace the major version of the matrix to a pinned version here.
         # Ex: ["18", "20", "22"] ---> ["18.19.1", "20", "22"]
         version: ["18", "20", "22"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
