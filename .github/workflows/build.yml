@@ -50,7 +50,7 @@ jobs:
         run: echo "BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" >> $GITHUB_ENV
       -
         name: Build
-        uses: docker/build-push-action
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/arm64,linux/amd64
