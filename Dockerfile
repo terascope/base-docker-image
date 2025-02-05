@@ -29,8 +29,8 @@ RUN apk --no-cache add \
     bsd-compat-headers \
     py-setuptools
 
-ENV NPM_CONFIG_LOGLEVEL error
-ENV WITH_SASL 0
+ENV NPM_CONFIG_LOGLEVEL=error
+ENV WITH_SASL=0
 
 RUN node --version
 RUN yarn --version
@@ -55,7 +55,7 @@ RUN npm init --yes &> /dev/null \
     --build \
     --no-package-lock \
     --no-optional \
-    'terafoundation_kafka_connector@~1.0.0' \
+    'terafoundation_kafka_connector@~1.2.1' \
     && npm cache clean --force
 
 RUN apk del .build-deps
@@ -68,7 +68,7 @@ RUN node --print --eval "require('node-rdkafka')"
 COPY docker-pkg-fix.js /usr/local/bin/docker-pkg-fix
 COPY wait-for-it.sh /usr/local/bin/wait-for-it
 
-ENV NODE_OPTIONS "--max-old-space-size=2048"
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.documentation="https://github.com/terascope/base-docker-image/blob/master/README.md" \
@@ -78,7 +78,7 @@ LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.title="Node-base" \
   org.opencontainers.image.vendor="Terascope" \
   io.terascope.image.node_version="$NODE_VERSION" \
-  io.terascope.image.kafka_connector_version="1.0.0"
+  io.terascope.image.kafka_connector_version="1.2.1"
 
 # Use tini to handle sigterm and zombie processes
 ENTRYPOINT ["/sbin/tini", "--"]

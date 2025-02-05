@@ -19,7 +19,7 @@ jobs:
         # In the case where a new node version introduces a breaking change,
         # replace the major version of the matrix to a pinned version here.
         # Ex: ["18", "20", "22"] ---> ["18.19.1", "20", "22"]
-        version: ["18", "20", "22.12.0"] # pinning node 22 for testing purposes, revert after tests
+        version: ["18", "20", "22"]
     runs-on: ubuntu-22.04
     permissions:
       contents: read
