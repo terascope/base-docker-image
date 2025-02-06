@@ -1,3 +1,4 @@
+# The default NODE_VERSION should stay in sync with the teraslice docker image default
 ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-alpine
 

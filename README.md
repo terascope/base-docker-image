@@ -64,6 +64,8 @@ Double check the action output before relying on the above commands.
 ## Release Workflow
 
 - Docker image builds will happen on any push to any branch other than `master`.
+- The `TERAFOUNDATION_KAFKA_CONNECTOR_VERSION` and `IMAGE_VERSION` build-args are specified in the `.env` file.
+- Merging to master will trigger an automated release if the `IMAGE_VERSION` has been increased in the `.env` file.
 - When a Github release is made, the image will be built and then pushed to
 the github container registry.
 
