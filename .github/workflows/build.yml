@@ -67,7 +67,7 @@ jobs:
             "TERAFOUNDATION_KAFKA_CONNECTOR_VERSION=${{ steps.dotenv.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
             "IMAGE_VERSION=${{ steps.dotenv.outputs.IMAGE_VERSION }}"
           provenance: false
-          sbom: false
+          sbom: true
           pull: true
           push: true
           file: ./Dockerfile
