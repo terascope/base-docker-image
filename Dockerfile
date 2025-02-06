@@ -1,8 +1,10 @@
-ARG NODE_VERSION
+ARG NODE_VERSION=22.13.1
 FROM node:${NODE_VERSION}-alpine
 
 ARG GITHUB_SHA
 ARG BUILD_TIMESTAMP
+ARG TERAFOUNDATION_KAFKA_CONNECTOR_VERSION
+ARG IMAGE_VERSION
 
 RUN apk --no-cache add \
     bash \
@@ -55,7 +57,7 @@ RUN npm init --yes &> /dev/null \
     --build \
     --no-package-lock \
     --no-optional \
-    'terafoundation_kafka_connector@~1.2.1' \
+    terafoundation_kafka_connector@~$TERAFOUNDATION_KAFKA_CONNECTOR_VERSION \
     && npm cache clean --force
 
 RUN apk del .build-deps
@@ -77,8 +79,9 @@ LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.source="https://github.com/terascope/base-docker-image" \
   org.opencontainers.image.title="Node-base" \
   org.opencontainers.image.vendor="Terascope" \
+  org.opencontainers.image.version="$IMAGE_VERSION" \
   io.terascope.image.node_version="$NODE_VERSION" \
-  io.terascope.image.kafka_connector_version="1.2.1"
+  io.terascope.image.kafka_connector_version="$TERAFOUNDATION_KAFKA_CONNECTOR_VERSION"
 
 # Use tini to handle sigterm and zombie processes
 ENTRYPOINT ["/sbin/tini", "--"]
