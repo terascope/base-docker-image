@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.13.1
+ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-alpine
 
 ARG GITHUB_SHA
@@ -79,7 +79,7 @@ LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.source="https://github.com/terascope/base-docker-image" \
   org.opencontainers.image.title="Node-base" \
   org.opencontainers.image.vendor="Terascope" \
-  org.opencontainers.image.version="$IMAGE_VERSION" \
+  io.terascope.image.base_version="$IMAGE_VERSION" \
   io.terascope.image.node_version="$NODE_VERSION" \
   io.terascope.image.kafka_connector_version="$TERAFOUNDATION_KAFKA_CONNECTOR_VERSION"
 
