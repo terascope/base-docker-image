@@ -27,6 +27,8 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+    outputs: 
+      image_version: ${{ steps.dotenv.outputs.IMAGE_VERSION }}
 
     steps:
       -
@@ -116,6 +118,28 @@ jobs:
           docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }}
     
+  slack-announcement:
+    needs: [build_and_release_matrix]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Announce release in Slack releases channel
+        id: announce-release
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ vars.SLACK_RELEASES_CHANNEL_ID }}
+            text: |
+              base-docker-image version `v${{ needs.build_and_release_matrix.outputs.image_version }}` has been released.
+              Please review and revise the automated release notes:
+              https://github.com/terascope/base-docker-image/releases/tag/v${{ needs.build_and_release_matrix.outputs.image_version }}
+              Docker images: https://github.com/terascope/base-docker-image/pkgs/container/node-base
+
+      - name: Failed Announcement Response
+        if: ${{ steps.announce-release.outputs.ok == 'false' }}
+        run: echo "Slackbot API failure response - ${{ steps.announce-release.outputs.response }}"
+
 # I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
       # -
       #   name: Build Core
