@@ -13,14 +13,33 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/node-base
 
 jobs:
+  compute-versions-from-env:
+    runs-on: ubuntu-latest
+    outputs:
+      TERAFOUNDATION_KAFKA_CONNECTOR_VERSION: ${{ steps.dotenv.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}
+      IMAGE_VERSION: ${{ steps.dotenv.outputs.IMAGE_VERSION }}
+      NODE_VERSIONS_ARRAY: ${{ steps.dotenv.outputs.NODE_VERSIONS_ARRAY }}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Get versions from .env file using Dotenv Action
+        id: dotenv
+        uses: falti/dotenv-action@v1.1.4
+        with:
+          log-variables: true
+          keys-case: bypass
+
   build_and_release_matrix:
+    needs: 'compute-versions-from-env'
     strategy:
       matrix:
-        # NOTE: These versions must be kept in sync with the build.yml
+        # NOTE: The NODE_VERSION_ARRAY is stored in the .env file.
         # In the case where a new node version introduces a breaking change,
-        # replace the major version of the matrix to a pinned version here.
+        # replace the major version of the matrix to a pinned version.
         # Ex: ["18", "20", "22"] ---> ["18.19.1", "20", "22"]
-        version: ["18", "20", "22"]
+        version: ${{ fromJSON(needs.compute-versions-from-env.outputs.NODE_VERSIONS_ARRAY) }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -58,8 +77,10 @@ jobs:
             "NODE_VERSION=${{ matrix.version }}"
             "GITHUB_SHA=${{ github.sha }}"
             "BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}"
+            "TERAFOUNDATION_KAFKA_CONNECTOR_VERSION=${{ needs.compute-versions-from-env.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
+            "IMAGE_VERSION=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
           provenance: false
-          sbom: false
+          sbom: true
           pull: true
           push: true
           file: ./Dockerfile
@@ -107,6 +128,30 @@ jobs:
           docker buildx imagetools create -t ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }} ${{ env.IMAGE_NAME }}:${{ matrix.version }}
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }}
     
+  slack-announcement:
+    # Only announce release when a release is published
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: [build_and_release_matrix, compute-versions-from-env]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Announce release in Slack releases channel
+        id: announce-release
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ vars.SLACK_RELEASES_CHANNEL_ID }}
+            text: |
+              base-docker-image version `v${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}` has been released.
+              Please review and revise the automated release notes:
+              https://github.com/terascope/base-docker-image/releases/tag/v${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}
+              Docker images: https://github.com/terascope/base-docker-image/pkgs/container/node-base
+
+      - name: Failed Announcement Response
+        if: ${{ steps.announce-release.outputs.ok == 'false' }}
+        run: echo "Slackbot API failure response - ${{ steps.announce-release.outputs.response }}"
+
 # I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
       # -
       #   name: Build Core

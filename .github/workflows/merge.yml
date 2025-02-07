@@ -1,0 +1,62 @@
+name: Check for Version Bump, Create Automated Release
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+
+jobs:
+  create-release-on-bump:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install semver-compare-cli
+        run: yarn && yarn add semver-compare-cli
+
+      - name: Get versions from .env file using Dotenv Action
+        id: dotenv
+        uses: falti/dotenv-action@v1.1.4
+        with:
+          log-variables: true
+          keys-case: bypass
+
+      - name: Check for version update
+        id: version_check
+        run: |
+          echo "current version:" ${{ steps.dotenv.outputs.IMAGE_VERSION }}
+
+          RELEASE_VERSION=$(gh release list --exclude-drafts -L 1 --json tagName --jq '.[].tagName')
+          echo "latest (pre)release version:" $RELEASE_VERSION
+
+          if ./node_modules/.bin/semver-compare $CURRENT_VERSION gt $RELEASE_VERSION; then
+            echo "base-docker-image version updated from $RELEASE_VERSION to $CURRENT_VERSION, creating release"
+            echo "version_updated=true" >> $GITHUB_OUTPUT
+            echo "tag: v$CURRENT_VERSION"
+            echo "tag=v$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "base-docker-image version not updated, will not release"
+            echo "version_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate a token
+        if: steps.version_check.outputs.version_updated == 'true'
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.RELEASES_APP_ID }}
+          private-key: ${{ secrets.RELEASES_PRIVATE_KEY }}
+
+      - name: Create Release
+        if: steps.version_check.outputs.version_updated == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          make_latest: true
+          tag_name: ${{ steps.version_check.outputs.tag }}
+          name: ${{ steps.version_check.outputs.tag }}
+          generate_release_notes: true
