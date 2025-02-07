@@ -30,7 +30,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "current version:" ${{ steps.dotenv.outputs.IMAGE_VERSION }}
+          CURRENT_VERSION=${{ steps.dotenv.outputs.IMAGE_VERSION }}
+          echo "current version:" $CURRENT_VERSION
 
           RELEASE_VERSION=$(gh release list --exclude-drafts -L 1 --json tagName --jq '.[].tagName')
           echo "latest (pre)release version:" $RELEASE_VERSION
