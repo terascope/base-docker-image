@@ -73,7 +73,7 @@ COPY wait-for-it.sh /usr/local/bin/wait-for-it
 
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
-LABEL  org.opencontainers.image.created="$BUILD_TIMESTAMP" \
+LABEL org.opencontainers.image.created="$BUILD_TIMESTAMP" \
   org.opencontainers.image.documentation="https://github.com/terascope/base-docker-image/blob/master/README.md" \
   org.opencontainers.image.licenses="MIT License" \
   org.opencontainers.image.revision="$GITHUB_SHA" \
