@@ -27,6 +27,8 @@ jobs:
 
       - name: Check for version update
         id: version_check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "current version:" ${{ steps.dotenv.outputs.IMAGE_VERSION }}
 
