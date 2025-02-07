@@ -136,6 +136,8 @@ jobs:
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ env.MAJOR }}.${{ env.MINOR }}
     
   slack-announcement:
+    # Only announce release when a release is published
+    if: github.event_name == 'release' && github.event.action == 'published'
     needs: [build_and_release_matrix, compute-versions-from-env]
     runs-on: ubuntu-latest
     steps:
