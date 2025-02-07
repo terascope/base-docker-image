@@ -68,13 +68,6 @@ jobs:
         id: docker_time_stamp
         run: echo "BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" >> $GITHUB_ENV
       -
-        name: Get versions from .env file using Dotenv Action
-        id: dotenv
-        uses: falti/dotenv-action@v1.1.4
-        with:
-          log-variables: true
-          keys-case: bypass
-      -
         name: Build
         uses: docker/build-push-action@v6
         with:
