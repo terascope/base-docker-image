@@ -20,6 +20,9 @@ jobs:
       NODE_VERSIONS_ARRAY: ${{ steps.dotenv.outputs.NODE_VERSIONS_ARRAY }}
     steps:
       -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
         name: Get versions from .env file using Dotenv Action
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
