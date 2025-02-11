@@ -134,7 +134,8 @@ jobs:
     needs: [build_and_release_matrix, compute-versions-from-env]
     runs-on: ubuntu-latest
     steps:
-      - name: Announce release in Slack releases channel
+      -
+        name: Announce release in Slack releases channel
         id: announce-release
         uses: slackapi/slack-github-action@v2.0.0
         with:
@@ -147,10 +148,31 @@ jobs:
               Please review and revise the automated release notes:
               https://github.com/terascope/base-docker-image/releases/tag/v${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}
               Docker images: https://github.com/terascope/base-docker-image/pkgs/container/node-base
-
-      - name: Failed Announcement Response
+      -
+        name: Failed Announcement Response
         if: ${{ steps.announce-release.outputs.ok == 'false' }}
         run: echo "Slackbot API failure response - ${{ steps.announce-release.outputs.response }}"
+
+  trigger-teraslice-docker-cache-workflow:
+    needs: [build_and_release_matrix, compute-versions-from-env]
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GH_CROSS_REPO_ACTIONS_APP_ID }}
+          private-key: ${{ secrets.GH_CROSS_REPO_ACTIONS_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: teraslice
+      - 
+        name: Send workflow dispatch event to teraslice
+        run: |
+          curl -X POST -H "Accept: application/vnd.github+json" \
+               -H "Authorization: Bearer ${{ steps.generate-token.outputs.token }}" \
+               https://api.github.com/repos/terascope/teraslice/actions/workflows/daily-docker-cache.yml/dispatches \
+               -d '{"ref":"master","inputs":{"reason":"New Base Images Released"}}'
 
 # I don't think we use the core images and we should consider removing this and the Dockerfile.core file.
       # -
