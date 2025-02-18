@@ -73,7 +73,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: "${{ env.IMAGE_NAME }}"
-          tags: "${{ matrix.version }}" 
+          tags: "${{ matrix.version }}"
+          annotations: |
+            manifest:io.terascope.image.base_version=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
+            manifest:io.terascope.image.node_version=${{ matrix.version }}" 
+            manifest:io.terascope.image.kafka_connector_version=${{ needs.compute-versions-from-env.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
       -
         name: Build
         uses: docker/build-push-action@v6
@@ -86,8 +90,7 @@ jobs:
             "BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}"
             "TERAFOUNDATION_KAFKA_CONNECTOR_VERSION=${{ needs.compute-versions-from-env.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
             "IMAGE_VERSION=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
-          labels: ${{ steps.meta.outputs.labels }}
-          annotations: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           provenance: false
           sbom: true
           pull: true
