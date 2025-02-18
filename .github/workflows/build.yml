@@ -71,7 +71,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
+          images: "${{ env.IMAGE_NAME }}"
+          tags: "${{ matrix.version }}-test" 
       -
         name: Build
         uses: docker/build-push-action@v6
