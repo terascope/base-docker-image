@@ -68,6 +68,12 @@ jobs:
         id: docker_time_stamp
         run: echo "BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" >> $GITHUB_ENV
       -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: "${{ env.IMAGE_NAME }}:${{ matrix.version }}" 
+      -
         name: Build
         uses: docker/build-push-action@v6
         with:
@@ -79,6 +85,8 @@ jobs:
             "BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}"
             "TERAFOUNDATION_KAFKA_CONNECTOR_VERSION=${{ needs.compute-versions-from-env.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
             "IMAGE_VERSION=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.labels }}
           provenance: false
           sbom: true
           pull: true
