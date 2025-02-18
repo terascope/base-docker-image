@@ -80,16 +80,15 @@ jobs:
             "IMAGE_VERSION=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
           provenance: false
           sbom: true
-          load: true
           pull: true
-          push: false
+          push: true
           file: ./Dockerfile
           tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
       - 
         name: Extract Labels from Image
         id: extract-labels
         run: |
-          LABELS=$(docker inspect "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" | jq -r '.[0].Config.Labels | to_entries | map("\(.key)=\(.value)") | join("\n")')
+          LABELS=$(docker buildx imagetools inspect "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" | jq -r '.[0].Config.Labels | to_entries | map("\(.key)=\(.value)") | join("\n")')
           echo "$LABELS"
           echo "$LABELS" >> labels.txt
           
@@ -99,23 +98,17 @@ jobs:
             echo "$LABELS"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-      -
-        name: Push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm64,linux/amd64
-          build-args: |
-            "NODE_VERSION=${{ matrix.version }}"
-            "GITHUB_SHA=${{ github.sha }}"
-            "BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}"
-            "TERAFOUNDATION_KAFKA_CONNECTOR_VERSION=${{ needs.compute-versions-from-env.outputs.TERAFOUNDATION_KAFKA_CONNECTOR_VERSION }}"
-            "IMAGE_VERSION=${{ needs.compute-versions-from-env.outputs.IMAGE_VERSION }}"
-          provenance: false
-          annotations: "${{ steps.extract-labels.outputs.labels }}"
-          sbom: true
-          push: true
-          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
+      - 
+        name: Push Labels as Manifest Annotations
+        run: |
+          # Create annotation arguments for buildx imagetools create
+          LABEL_ARGS=$(echo "${{ steps.extract-labels.outputs.labels }}" | awk -F= '{print "--annotation "$1"="$2}')
+          
+          # Recreate the manifest list with annotations
+          docker buildx imagetools create \
+            $LABEL_ARGS \
+            -t "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" \
+            "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test"
       -
         name: Grab Current Version
         id: current_version
