@@ -88,7 +88,7 @@ jobs:
         name: Extract Labels from Image
         id: extract-labels
         run: |
-          LABELS=$(docker buildx imagetools inspect "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" | jq -r '.[0].Config.Labels | to_entries | map("\(.key)=\(.value)") | join("\n")')
+          LABELS=$(docker inspect "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" | jq -r '.[0].Config.Labels | to_entries | map("\(.key)=\(.value)") | join("\n")')
           echo "$LABELS"
           echo "$LABELS" >> labels.txt
           
