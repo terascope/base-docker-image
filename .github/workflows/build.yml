@@ -104,7 +104,7 @@ jobs:
         name: Push Labels as Manifest Annotations
         run: |
           # Create annotation arguments for buildx imagetools create
-          LABEL_ARGS=$(echo "${{ steps.extract-labels.outputs.labels }}" | awk -F= '{print "--annotation "$1"="$2}')
+          LABEL_ARGS=$(echo "${{ steps.extract-labels.outputs.labels }}" | awk -F= '{print "--annotation "$1"=\"" $2 "\"" }')
           
           # Recreate the manifest list with annotations
           docker buildx imagetools create \
