@@ -83,7 +83,9 @@ jobs:
           pull: true
           push: true
           file: ./Dockerfile
-          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test" 
+          tags: "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test"
+      - name: Pull Image
+        run: docker pull "${{ env.IMAGE_NAME }}:${{ matrix.version }}-test"
       - 
         name: Extract Labels from Image
         id: extract-labels
