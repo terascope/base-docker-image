@@ -6,12 +6,8 @@ With the terafoundation connectors builtin:
 
 - `terascope/node-base:24`
 - `terascope/node-base:22`
-- `terascope/node-base:20`
-- `terascope/node-base:18`
 - `terascope/node-base:24.*.*`
 - `terascope/node-base:22.*.*`
-- `terascope/node-base:20.*.*`
-- `terascope/node-base:18.*.*`
 
 Without: (this will save the image size by roughly 200MB)
 
