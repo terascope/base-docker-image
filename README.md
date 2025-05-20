@@ -20,7 +20,6 @@ Without: (this will save the image size by roughly 200MB)
 - `terascope/node-base:22-core`
 - `terascope/node-base:20-core`
 - `terascope/node-base:18-core`
-- `terascope/node-base:24.*.*-core`
 - `terascope/node-base:22.*.*-core`
 - `terascope/node-base:20.*.*-core`
 - `terascope/node-base:18.*.*-core`
