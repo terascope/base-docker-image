@@ -17,7 +17,6 @@ Without: (this will save the image size by roughly 200MB)
 
 **_DEPRECATED:_** Core images are no longer built and pushed to docker.hub.  
 
-- `terascope/node-base:24-core`
 - `terascope/node-base:22-core`
 - `terascope/node-base:20-core`
 - `terascope/node-base:18-core`
